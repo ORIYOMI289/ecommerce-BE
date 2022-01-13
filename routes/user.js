@@ -1,20 +1,15 @@
-const { verifyToken, verifyTokenAndAuth } = require("../middleware/verifyToken") ;
-const users = require('../models/users') ;
 
-const bcrypt = require('bcrypt')
+const { userUpdate, getUsers, User, deleteUser } = require('../controller/user')
+const access = require('../middleware/accessLoginRole')
+
 const router = require('express').Router() ;
 
-router.put('/:id', verifyTokenAndAuth, async(req, res) => {
-    if (req.body.password) {
-        const salt = await bcrypt.genSalt(5);
-            req.body.password = await bcrypt.hash(req.body.password, salt)
-    }
-    try {
-        const updatedUser = await users.findByIdAndUpdate(req.params.id, {
-            $set: req.body
-        }, {new:true})
-    }
-    catch (err) { res.status(500).json(err) }
-})
+router.put('/:id', access.allowIfLoggedin, access.grantRoleAccess('updateOwn', 'profile'), userUpdate) ;
 
-module.exports = router
+router.get('/getUsers/:id', access.allowIfLoggedin, access.grantRoleAccess('readAny', 'profile'), getUsers) ;
+
+router.get('/getUser/:adminId/:id', access.allowIfLoggedin, access.grantRoleAccess('readAny', 'profile'), User) ;
+
+router.delete('/deleteUser/:adminId/:id', access.allowIfLoggedin, access.grantRoleAccess('deleteAny', 'profile'),  deleteUser) ;
+
+module.exports = router ; 

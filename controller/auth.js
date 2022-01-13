@@ -2,7 +2,6 @@ const express = require('express')
 const bcrypt = require('bcrypt')
 const axios = require('axios') ;
 const jwt = require('jsonwebtoken') ;
-// const _ = require("lodash") ;
 
 const users = require('../models/users') ;
 require('dotenv').config()
@@ -10,24 +9,17 @@ require('dotenv').config()
 const { jwtVerifyKey,jwtKey, mailjetApikey, mailJetSecretKey, mailSender} = process.env ;
 const mailjet = require('node-mailjet')
 .connect(mailjetApikey, mailJetSecretKey)
-
-
-
+ 
 //register
 exports.register = async (req, res) => {
     const newData = new users( 
-        {userName, email, password} = req.body  ) ;
-        // userName: req.body.userName, 
-        // email: req.body.email,
-        // password: req.body.password
+        {userName, email, password, role} = req.body  ) ;
   
     try {
         const salt = await bcrypt.genSalt(5);
         newData.password = await bcrypt.hash(newData.password, salt)
         await newData.save() ; 
         res.status(200).json(newData) ; 
-        // const token = jwt.sign({userName, email}, jwtKey, {expiresIn: '20mins'}) 
-        // res.status(200).header('authToken', token).json(newData) ; 
     } 
     catch (error){
         console.error(error)
@@ -37,7 +29,7 @@ exports.register = async (req, res) => {
 //login
 exports.signIn = async (req, res) => {
     try {
-        const User = await users.findOne({email: req.body.email})
+        const User = await users.findOne({email: req.body.email}) 
         if (!User)  return res.status(400).send('you are not a user, kindly register') ;       
         const comparePassword = await bcrypt.compare(req.body.password, User.password) ;
         if (!comparePassword) return res.status(400).send('incorrect password') ;
@@ -45,7 +37,7 @@ exports.signIn = async (req, res) => {
             id: User._id,
             isAdmin:User.isAdmin
         }, jwtKey, {expiresIn: "3d"})  ;
-        res.status(200).header('authToken', token).send('welcome back!')
+        res.status(200).header('authToken', token).send(User)
     }
     catch (err) {
         console.log(err)
@@ -61,8 +53,6 @@ exports.forgotPassword =  (req, res) =>{
         if (!mailjetApikey || !mailJetSecretKey) { return res.status(500).send('server error occured') } 
           
           else {
-            // const {email} = req.body ; 
-            // const token = jwt.sign({email}, jwtVerifyKey) ;
            
                 mailjet.post('send', { version: 'v3.1' }).request( {
                 Messages: [{

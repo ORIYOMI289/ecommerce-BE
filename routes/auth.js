@@ -1,4 +1,4 @@
-// const {mail} = require('../middleware/frgtpasswrdmailer') ;
+
 const {register, signIn, forgotPassword, resetPassword} = require('../controller/auth') ;
 
 const express = require('express')
