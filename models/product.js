@@ -1,26 +1,31 @@
 const mongoose = require('mongoose') ;
 
 const productSchema = new mongoose.Schema({
-    name:{ type: String, required: true, unique: true},
-    category : {type: String, required: true} ,
-    subcategory: [{
-        type: String,
-        model: [{
-            colour: [{
-                name: {type: String},
-                img: { type: String, required: true},
-            }],
-           size : [{
-                value: {type: Number},
-                price: { type: Number, required: true}
-           }]
-            
-        }],
+
+    category : { type: String, required: true, unique: false},
+    subcategory: { type: String, required:true },
+    newproduct: [{
+        colour: { type: Array },
+        imgPath: { type: String, required: true },
+        size : {type: Array},
+        price: { type: Number, required: true},
         description: { type: String, required: true}
     }]
     
-}, {timestamps: true}) ;
 
+}, {timestamps: true}) ; 
+
+
+// const citizen = [{
+//     Nigerian : [{
+//         yoruba: [{
+//             gender: ['male', 'female'],
+//             complexion: ['light', 'dark']
+//         }]
+//     }]
+// }]
+
+ 
 const products = mongoose.model('products', productSchema) ;
 
 module.exports = products ;

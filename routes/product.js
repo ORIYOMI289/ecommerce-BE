@@ -1,6 +1,17 @@
 const router = require('express').Router();
-const {Product} = require('../controller/product') ;
+const {createProducts, getProducts, getProduct, updateProduct, deleteProduct, queryTest} = require('../controller/product') ;
+const {grantRoleAccess, allowIfLoggedin} = require('../middleware/accessLoginRole') ;
 
-router.post('/products/details', Product)
+router.post('/:id', allowIfLoggedin, grantRoleAccess('createAny','product'), createProducts) ;
 
-module.exports = router
+router.get('/:productId', allowIfLoggedin, grantRoleAccess('readAny','product'), getProduct) ;
+
+router.get('/', grantRoleAccess('readAny','products'), getProducts) ;
+
+router.put('/:id/:productId', allowIfLoggedin, grantRoleAccess('updateAny','product'), updateProduct) ;
+
+router.delete('/:id/:productId', allowIfLoggedin, grantRoleAccess('deleteAny','product'), deleteProduct) ;
+
+// router.get('/', queryTest)
+
+module.exports = router ;

@@ -8,7 +8,7 @@ exports.userUpdate = async(req, res) => {
         const salt = await bcrypt.genSalt(5);
             req.body.password = await bcrypt.hash(req.body.password, salt)
     }
-    try {
+    try { 
         const updatedUser = await users.findByIdAndUpdate(req.params.id, {
             $set: req.body,
         }, {new:true}) ;

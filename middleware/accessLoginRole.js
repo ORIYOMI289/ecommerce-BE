@@ -4,8 +4,7 @@ const users = require('../models/users') ;
 exports.grantRoleAccess = function (action, resource) {
     return async (req, res, next) => {
         try{ 
-            const permission = role.can(req.user.role)[action](resource) ;
-            console.log(permission) 
+            const permission = role.can(req.user.role)[action](resource) ; 
             if(permission.granted) {
                 next() 
             }
@@ -20,11 +19,11 @@ exports.grantRoleAccess = function (action, resource) {
 exports.allowIfLoggedin  = async (req, res, next) => {
     try {
         const accessId = req.params.adminId || req.params.id ;
-        console.log(accessId)
+        // console.log(accessId)
         if (accessId) {
             const user = await users.findById(accessId);
             if (!user) return res.status(401).json({err: "you are not logged In"}) ;
-            console.log(user) 
+            // console.log(user) 
             req.user = user ;
             next() ;
         }
